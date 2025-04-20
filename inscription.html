@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Basic -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- Site metas -->
+    <title>Inscription</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="icon" href="images/fevicon.png" type="image/gif" />
+    <link rel="stylesheet" href="css/jquery.mCustomScrollbar.min.css">
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <link rel="stylesheet" href="css/owl.theme.default.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" media="screen">
+    <link href="https://unpkg.com/gijgo@1.9.13/css/gijgo.min.css" rel="stylesheet" type="text/css" />
+
+    <style>
+        body {
+            background-image: url('images/TAB.png');
+        background-size: cover;
+        background-position: center;
+        }
+        .card {
+            background-color: rgba(88, 61, 61, 0.5);
+            border: 2px solid rgba(10, 9, 9, 0.8);
+            border-radius: 10px;
+        }
+        .form-title {
+           color: #cccccc;
+        }
+        .label-brown {
+            color: brown;
+        }
+        label {
+            color: rgb(252, 249, 249);
+        }
+        .p {
+            color: rgb(221, 216, 216);
+        }
+        .btn {
+            color: rgb(255, 255, 255);
+        }
+        .form-title {
+            text-align: center;
+            margin-bottom: 20px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: larger;
+            color: white; /* Couleur blanche */
+        }
+        .logo {
+            font-size: 50px;
+            text-align: center;
+            color: #6f42c1;
+        }
+        .form-title {
+            text-align: center;
+            margin-bottom: 20px;
+            font-family:Arial, Helvetica, sans-serif;
+            font-size: larger;
+            color: aliceblue;
+        }
+        .container {
+            display: flex;
+            align-items: center;
+            background-color: rgba(44, 18, 10, 0.4); /* Keep this for transparency */
+        border-radius: 8px 0 0 8px;
+        border: solid;
+            padding: 30px;
+            width: 900px;
+          height: 500px;
+        }
+        .logo {
+            font-size: 50px;
+            color: #6f42c1;
+            margin-right: 20px;
+        }
+        .form-title {
+            margin: 0 20px;
+            font-size: 14px;
+            text-align: left;
+            color: rgb(240, 233, 233);
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            color: rgb(240, 233, 233);
+            font-family: Arial, Helvetica, sans-serif;
+
+        }
+        .form-group {
+            margin-bottom: 15px;
+            font-size: larger;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+        }
+        .form-check {
+            margin: 10px 0;
+            text-align: left;
+        }
+        .hr{
+            font-size: larger;
+        }
+       
+        .btn {
+            background-color: #6f42c1;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            width: 100%;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn:hover {
+            background-color: #5a32a2;
+        }
+    </style>
+</head>
+<body>
+
+   <!-- header section start -->
+   <div class="header_section">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+       <a class="logo" href="index.html"><img src="images/Untitled.png" style="width: 90px;" alt="Logo BiblioTech""></a>
+       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+       <span class="navbar-toggler-icon"></span>
+       </button>
+       <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+             <li class="nav-item active">
+                <a class="nav-link" href="index.html">Accueil</a>
+             </li>
+             <li class="nav-item">
+                <a class="nav-link" href="catalogue.html">Catalogue</a>
+             </li>
+             
+          </ul>
+          
+          <div class="search_icon"><a href="role .html"><img src="images/user-icon.png"><span class="padding_left_15">Connexion</span></a></div>
+         
+       </div>
+    </nav>
+ </div>
+    </div>
+ <BR>
+    
+    <div class="container border">
+        <div class="logo">👨🏻‍🏫</div>
+        <div class="t">
+        <div class="form-title text-white "><h4 class="hr text-white">✨Inscrivez-vous sur notre bibliothèque et découvrez un monde de livres passionnants✨</h4></div>
+    </div>
+        <div class="form-container">
+            <form id="registrationForm">
+                <div class="form-group">
+                    <label for="username">Votre nom</label>
+                    <input type="text" id="username" placeholder="Username" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" placeholder="E-mail" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" id="password" placeholder="Password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirmer le mot de passe</label>
+                    <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+                </div>
+             
+                <button type="submit" class="btn">Créer le compte</button>
+                <BR></BR>
+            </form>
+        </div>
+    </div>
+    
+    <br><br>
+    <!-- Footer Section Start -->
+    <footer>
+        <div class="footer_section layout_padding" >
+            <div class="container" style="height: 30px; background-color:#212121; border-radius: 0px; border: none;">
+               <div class="footer_menu">
+                  <ul>
+                     <li><a href="index.html">Accueil</a></li>
+                     <li><a href="catalogue.html">Catalogue</a></li>
+                     
+                     
+                  </ul>
+               </div>
+               <div class="social_icon">
+                  <ul>
+                     <li><a href="#"><img src="images/fb-icon.png"></a></li>
+                     <li><a href="#"><img src="images/twitter-icon.png"></a></li>
+                     <li><a href="#"><img src="images/linkedin-icon.png"></a></li>
+                     <li><a href="#"><img src="images/instagram-icon.png"></a></li>
+                  </ul>
+               </div>
+            </div>
+         </div>
+        </footer>
+
+
+
+    <!-- Javascript files -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/jquery.mCustomScrollbar.concat.min.js"></script>
+    <script src="js/custom.js"></script>
+    <script src="js/owl.carousel.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.js"></script>
+    <script src="https://unpkg.com/gijgo@1.9.13/js/gijgo.min.js" type="text/javascript"></script>
+
+    <script>
+        document.getElementById('registrationForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Empêche l'envoi du formulaire par défaut
+            // Redirection vers une nouvelle page
+            window.location.href = 'tableauAd.html'; // Remplacez par votre page de redirection
+        });
+
+        $('#datepicker').datepicker({
+            uiLibrary: 'bootstrap4'
+        });
+    </script>
+</body>
+</html>

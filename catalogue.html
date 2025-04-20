@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalogue de la Bibliothèque</title>
+    <!-- bootstrap css -->
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <!-- style css -->
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <style>
+       @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #362828;
+    color: #ECEBDE;
+    
+}
+
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2.5em;
+    font-weight: 600;
+}
+
+.search-filter {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+input, select {
+    padding: 12px;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+}
+
+input[type="text"] {
+    flex-grow: 1;
+    margin-right: 15px;
+}
+
+select {
+    width: 200px;
+}
+
+.book-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 50px;
+}
+
+.book-card {
+    width: 270px;
+    background-color: #D7D3BF;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+    text-align: center;
+}
+
+.book-card:hover {
+    transform: translateY(-10px);
+}
+
+.book-image {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+}
+
+.book-title {
+    padding: 5px;
+    font-size: 1em;
+    font-weight: bolder;
+    color: #362828;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: #362828;
+    margin: 5% auto;
+    padding: 30px;
+    border-radius: 15px;
+    width: 70%;
+    max-width: 700px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.book-details {
+    display: flex;
+    gap: 30px;
+}
+
+.book-details img {
+    width: 200px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.book-details-info {
+    flex: 1;
+}
+
+.book-details h2 {
+    color: #fff;
+    margin-bottom: 15px;
+}
+.book-details h3{
+    color: #fff;
+}
+.book-details p {
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+.keywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.keyword {
+    background-color: #D7D3BF;
+    color: #362828;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.8em;
+}
+button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            font-weight: 600;
+            margin-top: 15px;
+        }
+
+   button:hover {
+            background-color: #2980b9;
+            transform: scale(1.05);
+        }
+
+    button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInDown {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+    <div class="header_section">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="logo" href="index.html"><img src="images/Untitled.png" style="width: 80px;" alt="Logo BiblioTech""></a>
+           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+           <span class="navbar-toggler-icon"></span>
+           </button>
+           <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav mr-auto">
+                 <li class="nav-item active">
+                    <a class="nav-link" href="index.html">Accueil</a>
+                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link"  href="catalogue.html">Catalogue</a>
+                 </li>
+                 
+              </ul>
+              
+              <div class="search_icon" style="color: #362828;"><a href="role .html"><img src="images/user-icon.png"><span class="padding_left_15" style="color: #362828;">Connexion</span></a></div>
+             
+           </div>
+        </header>
+    <div class="container">
+        <br> <br> <br>
+        <h1 style="color: #ECEBDE; font-weight: bolder;">Catalogue </h1>
+    <br> <br>
+        <div class="search-filter">
+            <input type="text" id="search" placeholder="Rechercher par titre, auteur ou ISBN">
+            <select id="category-filter">
+                <option value="">Toutes les catégories</option>
+                <option value="Roman">Roman</option>
+                <option value="Science-Fiction">Science-Fiction</option>
+                <option value="Biographie">Biographie</option>
+                <option value="Histoire">Histoire</option>
+                <option value="Jeunesse">Jeunesse</option>
+                <option value="Philosophie">Philosophie</option>
+                <option value="Poésie">Poésie</option>
+                <option value="Fantasy">Fantasy</option>
+                <option value="Théâtre">Théâtre</option>
+            </select>
+        </div>
+        <br>
+        <div id="book-grid" class="book-grid"></div>
+    </div>
+
+    <div id="book-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="book-details" class="book-details"></div>
+        </div>
+    </div>
+
+    <div id="loan-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Emprunter un livre</h2>
+            <p id="modal-book-title"></p>
+            <input type="text" id="member-cne" placeholder="CNE de l'adhérent">
+            <button id="confirm-loan" >Confirmer l'emprunt</button>
+        </div>
+    </div>
+
+    <div class="footer_section layout_padding" style="margin-top: 20px;">
+        <div class="container">
+           <div class="footer_menu">
+              <ul>
+                 <li><a href="index.html">Accueil</a></li>
+                 <li><a href="catalogue.html">Catalogue</a></li>
+                 
+                 
+              </ul>
+           </div>
+           <div class="social_icon">
+              <ul>
+                 <li><a href="#"><img src="images/fb-icon.png"></a></li>
+                 <li><a href="#"><img src="images/twitter-icon.png"></a></li>
+                 <li><a href="#"><img src="images/linkedin-icon.png"></a></li>
+                 <li><a href="#"><img src="images/instagram-icon.png"></a></li>
+              </ul>
+           </div>
+        </div>
+     </div>
+
+    <script>
+        // Données simulées
+        let books = [
+        {
+                isbn: "9781234567890",
+                title: "Le Petit Prince",
+                author: "Antoine de Saint-Exupéry",
+                category: "Jeunesse",
+                image: "https://cdn1.booknode.com/book_cover/3551/full/le-petit-prince-3550683.jpg",
+                summary: "Un pilote s'écrase dans le désert et rencontre un petit prince venu d'une autre planète. Une histoire poétique qui aborde des thèmes profonds sur la vie et les relations humaines.",
+                keywords: ["imagination", "amitié", "philosophie", "voyage"],
+                copies: [
+                    { id: "A1", status: "disponible" },
+                    { id: "A2", status: "emprunté" },
+                    { id: "A3", status: "disponible" }
+                ]
+            },
+            {
+                isbn: "9789876543210",
+                title: "1984",
+                author: "George Orwell",
+                category: "Science-Fiction",
+                image: "https://cdn1.booknode.com/book_cover/72/full/1984-72084.jpg",
+                summary: "Dans un monde totalitaire, Winston Smith tente de résister à un gouvernement qui contrôle chaque aspect de la vie des citoyens, y compris leurs pensées.",
+                keywords: ["dystopie", "surveillance", "totalitarisme", "liberté"],
+                copies: [
+                    { id: "B1", status: "disponible" },
+                    { id: "B2", status: "disponible" },
+                    { id: "B3", status: "emprunté" }
+                ]
+            },
+            {
+                isbn: "9780123456789",
+                title: "Guerre et Paix",
+                author: "Léon Tolstoï",
+                category: "Roman",
+                image: "https://cdn1.booknode.com/book_cover/905/full/guerre-et-paix-905210.jpg",
+                summary: "Une épopée historique qui suit plusieurs familles aristocrates russes pendant les guerres napoléoniennes, mêlant l'histoire et la fiction.",
+                keywords: ["histoire", "amour", "guerre", "société russe"],
+                copies: [
+                    { id: "C1", status: "emprunté" },
+                    { id: "C2", status: "disponible" }
+                ]
+            },
+            {
+    isbn: "9780141439518",
+    title: "Hamlet",
+    author: "William Shakespeare",
+    category: "Théâtre",
+    image: "https://cdn1.booknode.com/book_cover/905/full/hamlet-905336.jpg",
+    summary: "La tragédie du prince Hamlet, qui cherche à venger le meurtre de son père, le roi du Danemark.",
+    keywords: ["tragédie", "vengeance", "folie", "théâtre élisabéthain"],
+    copies: [
+      { id: "H1", status: "disponible" },
+      { id: "H2", status: "disponible" }
+    ]
+  },
+ 
+  {
+    isbn: "9782070381357",
+    title: "Du côté de chez Swann",
+    author: "Marcel Proust",
+    category: "Roman",
+    image: "https://cdn1.booknode.com/book_cover/1062/full/du-cote-de-chez-swann-de-marcel-proust-essai-et-dossier-1061836.jpg",
+    summary: "Premier tome de 'À la recherche du temps perdu', explorant les thèmes de la mémoire et du temps qui passe.",
+    keywords: ["mémoire", "temps", "société française", "roman psychologique"],
+    copies: [
+      { id: "S1", status: "disponible" }
+    ]
+  },
+  {
+    isbn: "9782070409228",
+    title: "Les Essais",
+    author: "Michel de Montaigne",
+    category: "Philosophie",
+    image: "https://cdn1.booknode.com/book_cover/921/full/essais-integrale-920911.jpg",
+    summary: "Recueil d'essais philosophiques couvrant une grande variété de sujets, de la politique à la nature humaine.",
+    keywords: ["philosophie", "introspection", "humanisme", "Renaissance"],
+    copies: [
+      { id: "E1", status: "disponible" },
+      { id: "E2", status: "disponible" }
+    ]
+  },
+  {
+    isbn: "9782253160946",
+    title: "Gargantua",
+    author: "François Rabelais",
+    category: "Roman",
+    image: "https://cdn1.booknode.com/book_cover/253/full/gargantua-252683.jpg",
+    summary: "Roman satirique racontant les aventures du géant Gargantua, mêlant humour et critique sociale.",
+    keywords: ["satire", "humanisme", "Renaissance", "géants"],
+    copies: [
+      { id: "G1", status: "emprunté" }
+    ]
+  },
+  {
+    isbn: "9782070413119",
+    title: "Les Fleurs du mal",
+    author: "Charles Baudelaire",
+    category: "Poésie",
+    image: "https://cdn1.booknode.com/book_cover/804/full/les-fleurs-du-mal-804056.jpg",
+    summary: "Recueil de poèmes explorant des thèmes comme la beauté, la décadence, et la mort.",
+    keywords: ["poésie", "symbolisme", "modernité", "spleen"],
+    copies: [
+      { id: "F1", status: "disponible" },
+      { id: "F2", status: "disponible" }
+    ]
+  },
+  {
+    isbn: "9782070413096",
+    title: "Pensées",
+    author: "Blaise Pascal",
+    category: "Philosophie",
+    image: "https://cdn1.booknode.com/book_cover/989/full/pensees-988755.jpg",
+    summary: "Recueil de réflexions philosophiques et théologiques sur la condition humaine et la foi.",
+    keywords: ["philosophie", "théologie", "apologétique", "raison"],
+    copies: [
+      { id: "P1", status: "disponible" }
+    ]
+  },
+  {
+    isbn: "9782070368228",
+    title: "Le Misanthrope",
+    author: "Molière",
+    category: "Théâtre",
+    image: "https://cdn1.booknode.com/book_cover/1292/full/le-misanthrope-1291760.jpg",
+    summary: "Comédie de mœurs mettant en scène Alceste, un homme en conflit avec les conventions sociales de son époque.",
+    keywords: ["comédie", "satire sociale", "théâtre classique", "honnête homme"],
+    copies: [
+      { id: "M1", status: "disponible" },
+      { id: "M2", status: "emprunté" }
+    ]
+  },
+  {
+    isbn: "9782070409457",
+    title: "Les Confessions",
+    author: "Jean-Jacques Rousseau",
+    category: "Biographie",
+    image: "https://cdn1.booknode.com/book_cover/922/full/les-confessions-922279.jpg",
+    summary: "Autobiographie de Rousseau, retraçant sa vie et ses réflexions philosophiques.",
+    keywords: ["autobiographie", "philosophie", "Lumières", "introspection"],
+    copies: [
+      { id: "C1", status: "disponible" }
+    ]
+  },
+  {
+    isbn: "9782253096337",
+    title: "Le Rouge et le Noir",
+    author: "Stendhal",
+    category: "Roman",
+    image: "https://cdn1.booknode.com/book_cover/119/full/le-rouge-et-le-noir-119001.jpg",
+    summary: "Roman psychologique suivant l'ascension sociale de Julien Sorel dans la France post-napoléonienne.",
+    keywords: ["ambition", "amour", "société française", "réalisme"],
+    copies: [
+      { id: "R1", status: "disponible" },
+      { id: "R2", status: "disponible" }
+    ]
+  },
+  {
+    isbn: "9782070754921",
+    title: "À la recherche du temps perdu",
+    author: "Marcel Proust",
+    category: "Roman",
+    image: "https://cdn1.booknode.com/book_cover/5191/full/a-la-recherche-du-temps-perdu-5190809.jpg",
+    summary: "Œuvre monumentale explorant les thèmes de la mémoire, du temps et de la société française de la Belle Époque.",
+    keywords: ["mémoire", "temps", "société française", "roman-fleuve"],
+    copies: [
+      { id: "T1", status: "disponible" },
+      { id: "T2", status: "emprunté" }
+    ]
+  },
+  {
+    isbn: "9782253096344",
+    title: "Les Misérables",
+    author: "Victor Hugo",
+    category: "Roman",
+    image: "https://cdn1.booknode.com/book_cover/1077/full/les-miserables-1077010.jpg",
+    summary: "Fresque sociale du 19e siècle français, suivant le parcours de Jean Valjean et d'autres personnages emblématiques.",
+    keywords: ["justice sociale", "rédemption", "histoire de France", "romantisme"],
+    copies: [
+      { id: "L1", status: "disponible" },
+      { id: "L2", status: "disponible" }
+    ]
+  },
+  {
+    isbn: "9792070413119",
+    title: "Madame Bovary",
+    author: "Gustave Flaubert",
+    category: "Roman",
+    image: "https://cdn1.booknode.com/book_cover/1523/full/madame-bovary-1522663.jpg",
+    summary: "Roman réaliste dépeignant la vie d'Emma Bovary, ses aspirations romantiques et sa déchéance.",
+    keywords: ["réalisme", "adultère", "province française", "désillusion"],
+    copies: [
+      { id: "MB1", status: "disponible" }
+    ]
+  },
+  {
+    isbn: "9782253098058",
+    title: "Le Comte de Monte-Cristo",
+    author: "Alexandre Dumas",
+    category: "Roman",
+    image: "https://cdn1.booknode.com/book_cover/5466/full/le-comte-de-monte-cristo-5465672.jpg",
+    summary: "Roman d'aventures relatant la vengeance d'Edmond Dantès, injustement emprisonné.",
+    keywords: ["vengeance", "aventure", "justice", "romantisme"],
+    copies: [
+      { id: "MC1", status: "disponible" },
+      { id: "MC2", status: "emprunté" }
+    ]
+  },
+ 
+  {
+    isbn: "9782070360024",
+    title: "L'Étranger",
+    author: "Albert Camus",
+    category: "Roman",
+    image: "https://cdn1.booknode.com/book_cover/232/full/letranger-231931.jpg",
+    summary: "Roman existentialiste suivant Meursault, un homme indifférent face à la mort de sa mère et à son propre crime.",
+    keywords: ["existentialisme", "absurde", "justice", "indifférence"],
+    copies: [
+      { id: "E1", status: "disponible" }
+    ]
+  },
+  {
+    isbn: "9782253010692",
+    title: "Crime et Châtiment",
+    author: "Fiodor Dostoïevski",
+    category: "Roman",
+    image: "https://cdn1.booknode.com/book_cover/4940/full/crime-et-chatiment-4940185.jpg",
+    summary: "Roman psychologique explorant les tourments d'un étudiant ayant commis un meurtre.",
+    keywords: ["psychologie", "culpabilité", "rédemption", "Russie impériale"],
+    copies: [
+      { id: "CC1", status: "disponible" },
+      { id: "CC2", status: "emprunté" }
+    ]
+  },
+  {
+    isbn: "9782253006619",
+    title: "Les Trois Mousquetaires",
+    author: "Alexandre Dumas",
+    category: "Roman",
+    image: "https://cdn1.booknode.com/book_cover/5299/full/les-trois-mousquetaires-5298957.jpg",
+    summary: "Roman d'aventures suivant les péripéties de d'Artagnan et ses trois amis mousquetaires.",
+    keywords: ["aventure", "amitié", "histoire de France", "cape et d'épée"],
+    copies: [
+      { id: "TM1", status: "disponible" },
+      { id: "TM2", status: "disponible" }
+    ]
+  },
+  {
+    isbn: "9782253004244",
+    title: "Bel-Ami",
+    author: "Guy de Maupassant",
+    category: "Roman",
+    image: "https://cdn1.booknode.com/book_cover/5299/full/bel-ami-5298833.jpg",
+    summary: "Roman retraçant l'ascension sociale de Georges Duroy dans le Paris de la Belle Époque.",
+    keywords: ["ambition", "séduction", "journalisme", "société parisienne"],
+    copies: [
+      { id: "BA1", status: "disponible" }
+    ]
+  },
+  {
+        isbn: "9782253002924",
+        title: "Germinal",
+        author: "Émile Zola",
+        category: "Roman",
+        image: "https://cdn1.booknode.com/book_cover/1084/full/germinal-1084059.jpg",
+        summary: "Un récit poignant des luttes sociales dans les mines de charbon.",
+        keywords: ["lutte", "ouvriers", "révolte", "injustice"],
+        copies: [{ id: "G1", status: "disponible" }]
+    },
+    {
+        isbn: "9780747532743",
+        title: "Harry Potter à l'école des sorciers",
+        author: "J.K. Rowling",
+        category: "Fantasy",
+        image: "https://cdn1.booknode.com/book_cover/835/full/harry-potter-tome-1-harry-potter-a-lecole-des-sorciers-835229.jpg",
+        summary: "Les aventures magiques de Harry Potter lors de sa première année à Poudlard.",
+        keywords: ["magie", "amitié", "aventure", "sorcellerie"],
+        copies: [{ id: "HP1", status: "disponible" }, { id: "HP2", status: "emprunté" }]
+    },
+
+    {
+        isbn: "9782203016344",
+        title: "Les Aventures de Tintin",
+        author: "Hergé",
+        category: "Jeunesse",
+        image: "https://cdn1.booknode.com/book_cover/265/full/les-aventures-de-tintin-tome-5-le-lotus-bleu-264973.jpg",
+        summary: "Les aventures captivantes de Tintin et Milou.",
+        keywords: ["aventure", "bande dessinée", "exploration", "mystère"],
+        copies: [{ id: "T1", status: "disponible" }]
+    },
+    {
+        isbn: "9780142410370",
+        title: "Matilda",
+        author: "Roald Dahl",
+        category: "Jeunesse",
+        image: "https://cdn1.booknode.com/book_cover/126/full/matilda-125823.jpg",
+        summary: "Une jeune fille surdouée avec des pouvoirs extraordinaires.",
+        keywords: ["surdouée", "famille", "école", "pouvoirs"],
+        copies: [{ id: "M1", status: "disponible" }]
+    },
+    {
+        isbn: "9780441172719",
+        title: "Dune",
+        author: "Frank Herbert",
+        category: "Science-Fiction",
+        image: "https://i.pinimg.com/736x/b6/44/b2/b644b233f09fb37b086122b0a14cca8c.jpg",
+        summary: "Un chef-d'œuvre épique sur un désert planétaire et des intrigues politiques.",
+        keywords: ["politique", "épique", "écologie", "science-fiction"],
+        copies: [{ id: "D1", status: "disponible" }]
+    },
+    {
+        isbn: "9780261103344",
+        title: "Le Hobbit",
+        author: "J.R.R. Tolkien",
+        category: "Fantasy",
+        image: "https://cdn1.booknode.com/book_cover/5400/full/le-hobbit-5399601.jpg",
+        summary: "L'incroyable aventure de Bilbon Sacquet dans la Terre du Milieu.",
+        keywords: ["fantasy", "aventure", "magie", "dragon"],
+        copies: [{ id: "H1", status: "disponible" }]
+    },
+    {
+        isbn: "9780812550702",
+        title: "Ender's Game",
+        author: "Orson Scott Card",
+        category: "Science-Fiction",
+        image: "https://cdn1.booknode.com/book_cover/5323/full/le-cycle-dender-tome-1-la-strategie-ender-5323145.jpg",
+        summary: "Un jeune garçon est formé pour devenir un stratège militaire exceptionnel.",
+        keywords: ["science-fiction", "guerre", "espace", "stratégie"],
+        copies: [{ id: "E1", status: "disponible" }]
+    },
+    {
+        isbn: "9780441569595",
+        title: "Neuromancien",
+        author: "William Gibson",
+        category: "Science-Fiction",
+        image: "https://cdn1.booknode.com/book_cover/1418/full/neuromantique-tome-1-neuromancien-1418443.jpg",
+        summary: "Un roman pionnier du genre cyberpunk.",
+        keywords: ["cyberpunk", "technologie", "futur", "intelligence artificielle"],
+        copies: [{ id: "N1", status: "disponible" }]
+    },
+    {
+        isbn: "9780064471046",
+        title: "Les Chroniques de Narnia",
+        author: "C.S. Lewis",
+        category: "Fantasy",
+        image: "https://i.pinimg.com/736x/bb/40/39/bb4039d3825d189dec398d74f61c5c41.jpg",
+        summary: "Les aventures magiques dans le monde de Narnia.",
+        keywords: ["fantasy", "aventure", "magie", "royaume"],
+        copies: [{ id: "C1", status: "disponible" }]
+    }
+
+        ];
+        // Ajout des nouveaux livres au catalogue
+
+
+console.log(`${books.length} livres sont maintenant dans le catalogue.`);
+
+        let members = [
+            { cne: "12345", name: "Zineb Bidas", loans: 1 },
+            { cne: "67890", name: "Atiqa Essayouti", loans: 2 },
+            { cne: "13579", name: "Imane El-kourari", loans: 0 },
+        ];
+
+        let loans = [];
+
+        // Fonctions utilitaires
+       
+
+        function renderBooks(booksToRender) {
+            const bookGrid = document.getElementById('book-grid');
+            bookGrid.innerHTML = '';
+            booksToRender.forEach(book => {
+                const bookCard = document.createElement('div');
+                bookCard.className = 'book-card';
+                bookCard.innerHTML = `
+                    <img src="${book.image}" alt="${book.title}" class="book-image">
+                    <div class="book-title">${book.title}</div>
+                    
+                `;
+                bookCard.addEventListener('click', () => openBookModal(book.isbn));
+                bookGrid.appendChild(bookCard);
+            });
+        }
+
+
+
+        function filterBooks() {
+            const searchTerm = document.getElementById('search').value.toLowerCase();
+            const category = document.getElementById('category-filter').value;
+            const filteredBooks = books.filter(book => 
+                (book.title.toLowerCase().includes(searchTerm) ||
+                book.author.toLowerCase().includes(searchTerm) ||
+                book.isbn.includes(searchTerm) ||
+                book.keywords.some(keyword => keyword.toLowerCase().includes(searchTerm))) &&
+                (category === '' || book.category === category)
+            );
+            renderBooks(filteredBooks);
+        }
+
+        function openBookModal(isbn) {
+            const book = books.find(b => b.isbn === isbn);
+            const modal = document.getElementById('book-modal');
+            const bookDetails = document.getElementById('book-details');
+            bookDetails.innerHTML = `
+                <img src="${book.image}" alt="${book.title}">
+                <div class="book-details-info">
+                    <h2>${book.title}</h2>
+                    <p><strong>Auteur:</strong> ${book.author}</p>
+                    <p><strong>ISBN:</strong> ${book.isbn}</p>
+                    <p><strong>Catégorie:</strong> ${book.category}</p>
+                    <p><strong>Résumé:</strong> ${book.summary}</p>
+                    <div class="keywords">
+                        ${book.keywords.map(keyword => `<span class="keyword">${keyword}</span>`).join('')}
+                    </div>
+                    <br>
+                    <div class="copies">
+                        <h3><strong>Exemplaires:</strong></h3>
+                        ${book.copies.map(copy => `
+                            <p><strong>ID:</strong> ${copy.id} - <strong>Statut:</strong> ${copy.status}</p>
+                        `).join('')}
+                    </div>
+                    <button onclick="openLoanModal('${book.isbn}')" ${book.copies.every(copy => copy.status === 'emprunté') ? 'disabled' : ''}>
+                          ${book.copies.some(copy => copy.status === 'disponible') ? 'Emprunter' : 'Non disponible'}
+                      </button>
+                </div>
+            `;
+            modal.style.display = 'block';
+        }
+
+        function openLoanModal(isbn) {
+            const book = books.find(b => b.isbn === isbn);
+            const modal = document.getElementById('loan-modal');
+            const modalBookTitle = document.getElementById('modal-book-title');
+            modalBookTitle.textContent = `Livre: ${book.title}`;
+            modal.style.display = 'block';
+            modal.dataset.isbn = isbn;
+        }
+
+        function closeLoanModal() {
+            const modal = document.getElementById('loan-modal');
+            modal.style.display = 'none';
+            document.getElementById('member-cne').value = '';
+        }
+
+        function closeBookModal() {
+            const modal = document.getElementById('book-modal');
+            modal.style.display = 'none';
+        }
+
+        function confirmLoan() {
+            const modal = document.getElementById('loan-modal');
+            const isbn = modal.dataset.isbn;
+            const cne = document.getElementById('member-cne').value;
+            const member = members.find(m => m.cne === cne);
+            const book = books.find(b => b.isbn === isbn);
+
+            if (!member) {
+                alert("Membre non trouvé.");
+                return;
+            }
+
+            if (member.loans >= 3) {
+                alert("Le membre a déjà emprunté le nombre maximum d'exemplaires (3).");
+                return;
+            }
+
+            const availableCopy = book.copies.find(copy => copy.status === 'disponible');
+            if (!availableCopy) {
+                alert("Désolé, il n'y a plus d'exemplaires disponibles pour ce livre.");
+                return;
+            }
+
+            const loanDate = new Date();
+            const returnDate = new Date(loanDate.getTime() + 14 * 24 * 60 * 60 * 1000); // +2 semaines
+
+            loans.push({ isbn, copyId: availableCopy.id, cne, loanDate, returnDate });
+            availableCopy.status = 'emprunté';
+            member.loans++;
+
+            alert(`Emprunt enregistré pour le livre "${book.title}" (Exemplaire ${availableCopy.id}) par ${member.name}. À retourner avant le ${returnDate.toLocaleDateString()}.`);
+            closeLoanModal();
+            filterBooks();
+        }
+
+        // Event listeners
+        document.getElementById('search').addEventListener('input', filterBooks);
+        document.getElementById('category-filter').addEventListener('change', filterBooks);
+        document.querySelectorAll('.close').forEach(closeBtn => {
+            closeBtn.addEventListener('click', function() {
+                this.closest('.modal').style.display = 'none';
+            });
+        });
+        document.getElementById('confirm-loan').addEventListener('click', confirmLoan);
+
+        // Initialisation
+        renderBooks(books);
+    </script>
+</body>
+</html>

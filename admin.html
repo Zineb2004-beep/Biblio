@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord Admin - Gestion de Bibliothèque</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #362828;
+            --secondary-color: #362828;
+            --background-color: #AF9284;
+            --text-color: #0F090B;
+            --transition-speed: 0.3s;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            transition: background-color var(--transition-speed);
+        }
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 20px;
+            transition: width var(--transition-speed);
+        }
+        .sidebar.collapsed {
+            width: 60px;
+        }
+        .sidebar h2 {
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            margin-bottom: 10px;
+        }
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color var(--transition-speed);
+        }
+        .sidebar ul li a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .sidebar ul li a i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        h1 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: box-shadow var(--transition-speed);
+        }
+        .card:hover {
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color var(--transition-speed);
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        form {
+            display: grid;
+            gap: 10px;
+        }
+        input[type="text"], input[type="email"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            transition: border-color var(--transition-speed);
+        }
+        input[type="text"]:focus, input[type="email"]:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform var(--transition-speed);
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-card h3 {
+            margin: 0;
+            color: var(--primary-color);
+        }
+        .stat-card p {
+            font-size: 2em;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .search-bar {
+            margin-bottom: 20px;
+        }
+        .search-bar input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .pagination button {
+            margin: 0 5px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            background-color: white;
+            cursor: pointer;
+        }
+        .pagination button.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        #notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+            display: none;
+            z-index: 1000;
+        }
+        .chart-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar" id="sidebar">
+            <h2>Menu</h2>
+            <ul>
+                <li><a href="#" onclick="showSection('dashboard')"><i class="fas fa-tachometer-alt"></i> <span>Tableau de Bord</span></a></li>
+                <li><a href="#" onclick="showSection('books')"><i class="fas fa-book"></i> <span>Gestion des Livres</span></a></li>
+                <li><a href="#" onclick="showSection('members')"><i class="fas fa-users"></i> <span>Gestion des Adhérents</span></a></li>
+                <li><a href="#" onclick="showSection('loans')"><i class="fas fa-exchange-alt"></i> <span>Gestion des Emprunts</span></a></li>
+                <li><a href="index.html" style="font-weight: bold; "> <span>Se Déconnecter</span></a></li>
+            </ul>
+        </div>
+        <div class="main-content">
+            <div id="dashboard" class="section">
+                <h1>Bienvenue dans votre Espace Admin!</h1>
+                <div class="stats">
+                    <div class="stat-card">
+                        <h3>Total des Livres</h3>
+                        <p id="totalBooks">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total des Adhérents</h3>
+                        <p id="totalMembers">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Emprunts en cours</h3>
+                        <p id="activeLoans">0</p>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="statsChart"></canvas>
+                </div>
+            </div>
+            <div id="books" class="section" style="display:none;">
+                <h1>Gestion des Livres</h1>
+                <div class="card">
+                    <h2>Ajouter un Livre</h2>
+                    <form id="addBookForm">
+                        <input type="text" id="bookIsbn" placeholder="ISBN" required>
+                        <input type="text" id="bookTitle" placeholder="Titre" required>
+                        <input type="text" id="bookAuthor" placeholder="Auteur" required>
+                        <button type="submit" class="btn">Ajouter</button>
+                    </form>
+                </div>
+                <div class="card">
+                    <h2>Liste des Livres</h2>
+                    <div class="search-bar">
+                        <input type="text" id="searchBooks" placeholder="Rechercher un livre...">
+                    </div>
+                    <table id="booksList">
+                        <thead>
+                            <tr>
+                                <th>ISBN</th>
+                                <th>Titre</th>
+                                <th>Auteur</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <div class="pagination" id="booksPagination"></div>
+                </div>
+            </div>
+            <div id="members" class="section" style="display:none;">
+                <h1>Gestion des Adhérents</h1>
+                <div class="card">
+                    <h2>Ajouter un Adhérent</h2>
+                    <form id="addMemberForm">
+                        <input type="text" id="memberCne" placeholder="CNE" required>
+                        <input type="text" id="memberLastName" placeholder="Nom" required>
+                        <input type="text" id="memberFirstName" placeholder="Prénom" required>
+                        <input type="email" id="memberEmail" placeholder="Email" required>
+                        <button type="submit" class="btn">Ajouter</button>
+                    </form>
+                </div>
+                <div class="card">
+                    <h2>Liste des Adhérents</h2>
+                    <div class="search-bar">
+                        <input type="text" id="searchMembers" placeholder="Rechercher un adhérent...">
+                    </div>
+                    <table id="membersList">
+                        <thead>
+                            <tr>
+                                <th>CNE</th>
+                                <th>Nom</th>
+                                <th>Prénom</th>
+                                <th>Email</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <div class="pagination" id="membersPagination"></div>
+                </div>
+            </div>
+            <div id="loans" class="section" style="display:none;">
+                <h1>Gestion des Emprunts</h1>
+                <div class="card">
+                    <h2>Nouvel Emprunt</h2>
+                    <form id="newLoanForm">
+                        <input type="text" id="loanIsbn" placeholder="ISBN du livre" required>
+                        <input type="text" id="loanCne" placeholder="CNE de l'adhérent" required>
+                        <button type="submit" class="btn">Enregistrer l'emprunt</button>
+                    </form>
+                </div>
+                <div class="card">
+                    <h2>Emprunts en cours</h2>
+                    <div class="search-bar">
+                        <input type="text" id="searchLoans" placeholder="Rechercher un emprunt...">
+                    </div>
+                    <table id="loansList">
+                        <thead>
+                            <tr>
+                                <th>ISBN</th>
+                                <th>CNE</th>
+                                <th>Date d'emprunt</th>
+                                <th>Date de retour</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <div class="pagination" id="loansPagination"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="notification"></div>
+
+    <script>
+        // Utility functions
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.display = 'none';
+            });
+            document.getElementById(sectionId).style.display = 'block';
+        }
+
+        function formatDate(date) {
+            return new Date(date).toLocaleDateString('fr-FR');
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // Data management
+        let books = JSON.parse(localStorage.getItem('books')) || [];
+        let members = JSON.parse(localStorage.getItem('members')) || [];
+        let loans = JSON.parse(localStorage.getItem('loans')) || [];
+
+        function saveData() {
+            localStorage.setItem('books', JSON.stringify(books));
+            localStorage.setItem('members', JSON.stringify(members));
+            localStorage.setItem('loans', JSON.stringify(loans));
+            updateDashboard();
+        }
+
+        function updateDashboard() {
+            document.getElementById('totalBooks').textContent = books.length;
+            document.getElementById('totalMembers').textContent = members.length;
+            document.getElementById('activeLoans').textContent = loans.length;
+            updateStatsChart();
+        }
+
+        function updateStatsChart() {
+            const ctx = document.getElementById('statsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Livres', 'Adhérents', 'Emprunts'],
+                    datasets: [{
+                        label: 'Statistiques',
+                        data: [books.length, members.length, loans.length],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Books management
+        function addBook(event) {
+            event.preventDefault();
+            const isbn = document.getElementById('bookIsbn').value;
+            const title = document.getElementById('bookTitle').value;
+            const author = document.getElementById('bookAuthor').value;
+            if (books.some(book => book.isbn === isbn)) {
+                showNotification('Un livre avec cet ISBN existe déjà.');
+                return;
+            }
+            books.push({ isbn, title, author });
+            saveData();
+            renderBooks();
+            event.target.reset();
+            showNotification('Livre ajouté avec succès.');
+        }
+
+        function renderBooks(page = 1, searchTerm = '') {
+            const itemsPerPage = 5;
+            const filteredBooks = books.filter(book => 
+                book.isbn.includes(searchTerm) || 
+                book.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                book.author.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            const totalPages = Math.ceil(filteredBooks.length / itemsPerPage);
+            const startIndex = (page - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const booksToDisplay = filteredBooks.slice(startIndex, endIndex);
+
+            const tbody = document.querySelector('#booksList tbody');
+            tbody.innerHTML = '';
+            booksToDisplay.forEach(book => {
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = book.isbn;
+                row.insertCell(1).textContent = book.title;
+                row.insertCell(2).textContent = book.author;
+                const actionsCell = row.insertCell(3);
+                actionsCell.innerHTML = `
+                    <button onclick="editBook('${book.isbn}')" class="btn"><i class="fas fa-edit"></i></button>
+                    <button onclick="deleteBook('${book.isbn}')" class="btn"><i class="fas fa-trash"></i></button>
+                `;
+            });
+
+            renderPagination('booksPagination', totalPages, page, (newPage) => renderBooks(newPage, searchTerm));
+        }
+
+        function editBook(isbn) {
+            const book = books.find(b => b.isbn === isbn);
+            if (book) {
+                document.getElementById('bookIsbn').value = book.isbn;
+                document.getElementById('bookTitle').value = book.title;
+                document.getElementById('bookAuthor').value = book.author;
+                showNotification('Modifiez les détails du livre et soumettez pour mettre à jour.');
+            }
+        }
+
+        function deleteBook(isbn) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer ce livre ?')) {
+                books = books.filter(b => b.isbn !== isbn);
+                saveData();
+                renderBooks();
+                showNotification('Livre supprimé avec succès.');
+            }
+        }
+
+        // Members management
+        function addMember(event) {
+            event.preventDefault();
+            const cne = document.getElementById('memberCne').value;
+            const lastName = document.getElementById('memberLastName').value;
+            const firstName = document.getElementById('memberFirstName').value;
+            const email = document.getElementById('memberEmail').value;
+            if (members.some(member => member.cne === cne)) {
+                showNotification('Un adhérent avec ce CNE existe déjà.');
+                return;
+            }
+            members.push({ cne, lastName, firstName, email });
+            saveData();
+            renderMembers();
+            event.target.reset();
+            showNotification('Adhérent ajouté avec succès.');
+        }
+
+        function renderMembers(page = 1, searchTerm = '') {
+            const itemsPerPage = 5;
+            const filteredMembers = members.filter(member => 
+                member.cne.includes(searchTerm) || 
+                member.lastName.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                member.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                member.email.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            const totalPages = Math.ceil(filteredMembers.length / itemsPerPage);
+            const startIndex = (page - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const membersToDisplay = filteredMembers.slice(startIndex, endIndex);
+
+            const tbody = document.querySelector('#membersList tbody');
+            tbody.innerHTML = '';
+            membersToDisplay.forEach(member => {
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = member.cne;
+                row.insertCell(1).textContent = member.lastName;
+                row.insertCell(2).textContent = member.firstName;
+                row.insertCell(3).textContent = member.email;
+                const actionsCell = row.insertCell(4);
+                actionsCell.innerHTML = `
+                    <button onclick="editMember('${member.cne}')" class="btn"><i class="fas fa-edit"></i></button>
+                    <button onclick="deleteMember('${member.cne}')" class="btn"><i class="fas fa-trash"></i></button>
+                `;
+            });
+
+            renderPagination('membersPagination', totalPages, page, (newPage) => renderMembers(newPage, searchTerm));
+        }
+
+        function editMember(cne) {
+            const member = members.find(m => m.cne === cne);
+            if (member) {
+                document.getElementById('memberCne').value = member.cne;
+                document.getElementById('memberLastName').value = member.lastName;
+                document.getElementById('memberFirstName').value = member.firstName;
+                document.getElementById('memberEmail').value = member.email;
+                showNotification('Modifiez les détails de l\'adhérent et soumettez pour mettre à jour.');
+            }
+        }
+
+        function deleteMember(cne) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer cet adhérent ?')) {
+                members = members.filter(m => m.cne !== cne);
+                saveData();
+                renderMembers();
+                showNotification('Adhérent supprimé avec succès.');
+            }
+        }
+
+        // Loans management
+        function addLoan(event) {
+            event.preventDefault();
+            const isbn = document.getElementById('loanIsbn').value;
+            const cne = document.getElementById('loanCne').value;
+            const book = books.find(b => b.isbn === isbn);
+            const member = members.find(m => m.cne === cne);
+            if (!book) {
+                showNotification('Livre non trouvé.');
+                return;
+            }
+            if (!member) {
+                showNotification('Adhérent non trouvé.');
+                return;
+            }
+            const loanDate = new Date().toISOString();
+            const returnDate = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(); // 2 weeks from now
+            loans.push({ isbn, cne, loanDate, returnDate });
+            saveData();
+            renderLoans();
+            event.target.reset();
+            showNotification('Emprunt enregistré avec succès.');
+        }
+
+        function renderLoans(page = 1, searchTerm = '') {
+            const itemsPerPage = 5;
+            const filteredLoans = loans.filter(loan => 
+                loan.isbn.includes(searchTerm) || 
+                loan.cne.includes(searchTerm)
+            );
+            const totalPages = Math.ceil(filteredLoans.length / itemsPerPage);
+            const startIndex = (page - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const loansToDisplay = filteredLoans.slice(startIndex, endIndex);
+
+            const tbody = document.querySelector('#loansList tbody');
+            tbody.innerHTML = '';
+            loansToDisplay.forEach(loan => {
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = loan.isbn;
+                row.insertCell(1).textContent = loan.cne;
+                row.insertCell(2).textContent = formatDate(loan.loanDate);
+                row.insertCell(3).textContent = formatDate(loan.returnDate);
+                const actionsCell = row.insertCell(4);
+                actionsCell.innerHTML = `
+                    <button onclick="returnBook('${loan.isbn}', '${loan.cne}')" class="btn"><i class="fas fa-undo"></i> Retourner</button>
+                `;
+            });
+
+            renderPagination('loansPagination', totalPages, page, (newPage) => renderLoans(newPage, searchTerm));
+        }
+
+        function returnBook(isbn, cne) {
+            if (confirm('Confirmer le retour de ce livre ?')) {
+                loans = loans.filter(l => !(l.isbn === isbn && l.cne === cne));
+                saveData();
+                renderLoans();
+                showNotification('Livre retourné avec succès.');
+            }
+        }
+
+        function renderPagination(containerId, totalPages, currentPage, callback) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            for (let i = 1; i <= totalPages; i++) {
+                const button = document.createElement('button');
+                button.textContent = i;
+                button.classList.toggle('active', i === currentPage);
+                button.addEventListener('click', () => callback(i));
+                container.appendChild(button);
+            }
+        }
+
+        // Event listeners
+        document.getElementById('addBookForm').addEventListener('submit', addBook);
+        document.getElementById('addMemberForm').addEventListener('submit', addMember);
+        document.getElementById('newLoanForm').addEventListener('submit', addLoan);
+
+        document.getElementById('searchBooks').addEventListener('input', debounce((e) => renderBooks(1, e.target.value), 300));
+        document.getElementById('searchMembers').addEventListener('input', debounce((e) => renderMembers(1, e.target.value), 300));
+        document.getElementById('searchLoans').addEventListener('input', debounce((e) => renderLoans(1, e.target.value), 300));
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Toggle sidebar
+        document.querySelector('.sidebar h2').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+        });
+
+        // Initial render
+        updateDashboard();
+        renderBooks();
+        renderMembers();
+        renderLoans();
+    </script>
+</body>
+</html>

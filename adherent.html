@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord Adhérent - Gestion de Bibliothèque</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #362828;
+            --secondary-color: #362828;
+            --background-color: #AF9284;
+            --text-color: #0F090B;
+            --transition-speed: 0.3s;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            transition: background-color var(--transition-speed);
+        }
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 20px;
+            transition: width var(--transition-speed);
+        }
+        .sidebar.collapsed {
+            width: 60px;
+        }
+        .sidebar h2 {
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            margin-bottom: 10px;
+        }
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color var(--transition-speed);
+        }
+        .sidebar ul li a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .sidebar ul li a i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        h1 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: box-shadow var(--transition-speed);
+        }
+        .card:hover {
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color var(--transition-speed);
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .search-bar {
+            margin-bottom: 20px;
+        }
+        .search-bar input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .pagination button {
+            margin: 0 5px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            background-color: white;
+            cursor: pointer;
+        }
+        .pagination button.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        #notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+            display: none;
+            z-index: 1000;
+        }
+        .chart-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar" id="sidebar">
+            <h2>Menu Adhérent</h2>
+            <ul>
+                <li><a href="#" onclick="showSection('dashboard')"><i class="fas fa-tachometer-alt"></i> <span>Tableau de Bord</span></a></li>
+                <li><a href="#" onclick="showSection('borrowed')"><i class="fas fa-book"></i> <span>Livres Empruntés</span></a></li>
+                <li><a href="#" onclick="showSection('catalogue')"><i class="fas fa-list"></i> <span>Catalogue</span></a></li>
+                <li><a href="#" onclick="showSection('history')"><i class="fas fa-history"></i> <span>Historique</span></a></li>
+                <li><a href="index.html" style="font-weight: bold; "> <span>Se Déconnecter</span></a></li>
+
+            </ul>
+        </div>
+        <div class="main-content">
+            <div id="dashboard" class="section">
+                <h1>Bienvenue dans votre espace adhérent!</h1>
+                <div class="stats">
+                    <div class="stat-card">
+                        <h3>Livres Empruntés</h3>
+                        <p id="borrowedBooks">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Jours Restants</h3>
+                        <p id="remainingDays">0</p>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="statsChart"></canvas>
+                </div>
+            </div>
+            <div id="borrowed" class="section" style="display:none;">
+                <h1>Vos Livres Empruntés</h1>
+                <div class="card">
+                    <h2>Liste des Emprunts</h2>
+                    <table id="borrowedList">
+                        <thead>
+                            <tr>
+                                <th>Titre</th>
+                                <th>Auteur</th>
+                                <th>Date d'emprunt</th>
+                                <th>Date de retour</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="catalogue" class="section" style="display:none;">
+                <h1>Catalogue de la Bibliothèque</h1>
+                <div class="card">
+                    <h2>Rechercher un Livre</h2>
+                    <div class="search-bar">
+                        <input type="text" id="searchBooks" placeholder="Rechercher un livre...">
+                    </div>
+                    <table id="booksList">
+                        <thead>
+                            <tr>
+                                <th>Titre</th>
+                                <th>Auteur</th>
+                                <th>Disponibilité</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <div class="pagination" id="booksPagination"></div>
+                </div>
+            </div>
+            <div id="history" class="section" style="display:none;">
+                <h1>Historique des Emprunts</h1>
+                <div class="card">
+                    <h2>Vos Emprunts Passés</h2>
+                    <table id="historyList">
+                        <thead>
+                            <tr>
+                                <th>Titre</th>
+                                <th>Auteur</th>
+                                <th>Date d'emprunt</th>
+                                <th>Date de retour</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <div class="pagination" id="historyPagination"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="notification"></div>
+
+    <script>
+       
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.display = 'none';
+            });
+            document.getElementById(sectionId).style.display = 'block';
+        }
+
+        function formatDate(date) {
+            return new Date(date).toLocaleDateString('fr-FR');
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+  
+        let borrowedBooks = [
+            { id: 1, title: "Le Petit Prince", author: "Antoine de Saint-Exupéry", borrowDate: "2023-05-01", returnDate: "2023-05-15" },
+            { id: 2, title: "1984", author: "George Orwell", borrowDate: "2023-05-10", returnDate: "2023-05-24" }
+        ];
+
+        let catalogueBooks = [
+            { id: 3, title: "Notre-Dame de Paris", author: "Victor Hugo", available: true },
+            { id: 4, title: "Le Comte de Monte-Cristo", author: "Alexandre Dumas", available: false },
+            { id: 5, title: "Madame Bovary", author: "Gustave Flaubert", available: true }
+        ];
+
+        let borrowHistory = [
+            { id: 6, title: "Les Misérables", author: "Victor Hugo", borrowDate: "2023-03-01", returnDate: "2023-03-15" },
+            { id: 7, title: "L'Étranger", author: "Albert Camus", borrowDate: "2023-04-01", returnDate: "2023-04-15" }
+        ];
+
+      
+        function updateDashboard() {
+            document.getElementById('borrowedBooks').textContent = borrowedBooks.length;
+            const today = new Date();
+            const remainingDays = borrowedBooks.reduce((acc, book) => {
+                const returnDate = new Date(book.returnDate);
+                const diff = Math.ceil((returnDate - today) / (1000 * 60 * 60 * 24));
+                return acc + (diff > 0 ? diff : 0);
+            }, 0);
+            document.getElementById('remainingDays').textContent = remainingDays;
+            updateStatsChart();
+        }
+
+        function updateStatsChart() {
+            const ctx = document.getElementById('statsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Empruntés', 'Historique'],
+                    datasets: [{
+                        label: 'Nombre de Livres',
+                        data: [borrowedBooks.length, borrowHistory.length],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+    
+        function renderBorrowedBooks() {
+            const tbody = document.querySelector('#borrowedList tbody');
+            tbody.innerHTML = '';
+            borrowedBooks.forEach(book => {
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = book.title;
+                row.insertCell(1).textContent = book.author;
+                row.insertCell(2).textContent = formatDate(book.borrowDate);
+                row.insertCell(3).textContent = formatDate(book.returnDate);
+                const actionsCell = row.insertCell(4);
+                actionsCell.innerHTML = `
+                    <button onclick="extendLoan(${book.id})" class="btn"><i class="fas fa-calendar-plus"></i> Prolonger</button>
+                `;
+            });
+        }
+
+        function extendLoan(bookId) {
+            const book = borrowedBooks.find(b => b.id === bookId);
+            if (book) {
+                const newReturnDate = new Date(book.returnDate);
+                newReturnDate.setDate(newReturnDate.getDate() + 7);
+                book.returnDate = newReturnDate.toISOString().split('T')[0];
+                renderBorrowedBooks();
+                showNotification('Emprunt prolongé de 7 jours.');
+            }
+        }
+
+        
+        function renderCatalogue(page = 1, searchTerm = '') {
+            const itemsPerPage = 5;
+            const filteredBooks = catalogueBooks.filter(book => 
+                book.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                book.author.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            const totalPages = Math.ceil(filteredBooks.length / itemsPerPage);
+            const startIndex = (page - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const booksToDisplay = filteredBooks.slice(startIndex, endIndex);
+
+            const tbody = document.querySelector('#booksList tbody');
+            tbody.innerHTML = '';
+            booksToDisplay.forEach(book => {
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = book.title;
+                row.insertCell(1).textContent = book.author;
+                row.insertCell(2).textContent = book.available ? 'Disponible' : 'Indisponible';
+                const actionsCell = row.insertCell(3);
+                actionsCell.innerHTML = `
+                    <button onclick="borrowBook(${book.id})" class="btn" ${!book.available ? 'disabled' : ''}><i class="fas fa-book"></i> Emprunter</button>
+                `;
+            });
+
+            renderPagination('booksPagination', totalPages, page, (newPage) => renderCatalogue(newPage, searchTerm));
+        }
+
+        function borrowBook(bookId) {
+            const book = catalogueBooks.find(b => b.id === bookId);
+            if (book && book.available) {
+                book.available = false;
+                const today = new Date();
+                const returnDate = new Date(today.setDate(today.getDate() + 14));
+                borrowedBooks.push({
+                    id: book.id,
+                    title: book.title,
+                    author: book.author,
+                    borrowDate: today.toISOString().split('T')[0],
+                    returnDate: returnDate.toISOString().split('T')[0]
+                });
+                renderCatalogue();
+                renderBorrowedBooks();
+                updateDashboard();
+                showNotification('Livre emprunté avec succès.');
+            }
+        }
+
+      
+        function renderHistory(page = 1) {
+            const itemsPerPage = 5;
+            const totalPages = Math.ceil(borrowHistory.length / itemsPerPage);
+            const startIndex = (page - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const historyToDisplay = borrowHistory.slice(startIndex, endIndex);
+
+            const tbody = document.querySelector('#historyList tbody');
+            tbody.innerHTML = '';
+            historyToDisplay.forEach(book => {
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = book.title;
+                row.insertCell(1).textContent = book.author;
+                row.insertCell(2).textContent = formatDate(book.borrowDate);
+                row.insertCell(3).textContent = formatDate(book.returnDate);
+            });
+
+            renderPagination('historyPagination', totalPages, page, renderHistory);
+        }
+
+        
+        function renderPagination(containerId, totalPages, currentPage, callback) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            for (let i = 1; i <= totalPages; i++) {
+                const button = document.createElement('button');
+                button.textContent = i;
+                button.classList.toggle('active', i === currentPage);
+                button.addEventListener('click', () => callback(i));
+                container.appendChild(button);
+            }
+        }
+
+      
+        document.getElementById('searchBooks').addEventListener('input', debounce((e) => renderCatalogue(1, e.target.value), 300));
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+      
+        document.querySelector('.sidebar h2').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+        });
+
+       
+        updateDashboard();
+        renderBorrowedBooks();
+        renderCatalogue();
+        renderHistory();
+    </script>
+</body>
+</html>
