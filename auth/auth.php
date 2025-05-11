@@ -13,11 +13,15 @@ class Auth {
         $this->utilisateur = new Utilisateur($this->db);
     }
 
+    public function getDb() {
+        return $this->db;
+    }
+
     public function login($email, $password) {
         $this->utilisateur->email = $email;
 
-        if($this->utilisateur->emailExiste()) {
-            if(password_verify($password, $this->utilisateur->mot_de_passe)) {
+        if ($this->utilisateur->emailExiste()) {
+            if (password_verify($password, $this->utilisateur->mot_de_passe)) {
                 $_SESSION['user_id'] = $this->utilisateur->id;
                 $_SESSION['user_nom'] = $this->utilisateur->nom;
                 $_SESSION['user_role'] = $this->utilisateur->role;
@@ -33,7 +37,7 @@ class Auth {
         $this->utilisateur->mot_de_passe = $password;
         $this->utilisateur->role = 'utilisateur';
 
-        if($this->utilisateur->creer()) {
+        if ($this->utilisateur->creer()) {
             return true;
         }
         return false;
@@ -53,7 +57,7 @@ class Auth {
     }
 
     public function getCurrentUser() {
-        if($this->isLoggedIn()) {
+        if ($this->isLoggedIn()) {
             return [
                 'id' => $_SESSION['user_id'],
                 'nom' => $_SESSION['user_nom'],
@@ -65,16 +69,16 @@ class Auth {
 }
 
 // Traitement des requêtes d'authentification
-if($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $auth = new Auth();
     $action = $_POST['action'] ?? '';
 
-    switch($action) {
+    switch ($action) {
         case 'login':
             $email = $_POST['email'] ?? '';
             $password = $_POST['password'] ?? '';
             
-            if($auth->login($email, $password)) {
+            if ($auth->login($email, $password)) {
                 header('Location: ../index.php');
                 exit;
             } else {
@@ -88,7 +92,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             $email = $_POST['email'] ?? '';
             $password = $_POST['password'] ?? '';
             
-            if($auth->register($nom, $email, $password)) {
+            if ($auth->register($nom, $email, $password)) {
                 header('Location: ../login.php?success=registration_complete');
                 exit;
             } else {
@@ -104,4 +108,4 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             break;
     }
 }
-?> 
+?>
